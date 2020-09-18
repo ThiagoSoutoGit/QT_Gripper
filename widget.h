@@ -57,7 +57,7 @@ public:
 
 
 
-private slots:
+public slots:
 
     void on_btn_Inverse_Kinematics_clicked();
 

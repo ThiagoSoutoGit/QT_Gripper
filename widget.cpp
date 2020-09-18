@@ -244,9 +244,94 @@ void Widget::on_btn_Inverse_Kinematics_clicked()
     T45 = h_T(0, l_4_value, theta_5_value, 0);
     std::cout << "Matrix T45:" << std::endl << T45.format(CleanFmt) << std::endl << std::endl;
 
+
+    T01 = T00 * T01;
+
+    double x01 = T01(0,3);
+    double y01 = T01(1,3);
+    double z01 = T01(2,3);
+
+    //Printing T01
+    ui->matrixTextEdit->appendPlainText("\n T01 : \n");
+    for(int i = 0; i <= 3 ; ++i){
+        QString row_String;
+        for(int j = 0; j <= 3; ++j){
+            value = QString::number(T01(i,j));
+            row_String.append(value);
+            if(j!=3){
+                row_String.append(", ");
+            }
+        }
+        ui->matrixTextEdit->appendPlainText(row_String);
+    }
+
+    Matrix4d T02;
+    T02 = T00 * T01 * T12;
+
+    double x02 = T02(0,3);
+    double y02 = T02(1,3);
+    double z02 = T02(2,3);
+
+    //Printing T02
+    ui->matrixTextEdit->appendPlainText("\n T02 : \n");
+    for(int i = 0; i <= 3 ; ++i){
+        QString row_String;
+        for(int j = 0; j <= 3; ++j){
+            value = QString::number(T02(i,j));
+            row_String.append(value);
+            if(j!=3){
+                row_String.append(", ");
+            }
+        }
+        ui->matrixTextEdit->appendPlainText(row_String);
+    }
+
+    Matrix4d T03;
+    T03 = T00 * T01 * T12 * T23;
+
+    double x03 = T03(0,3);
+    double y03 = T03(1,3);
+    double z03 = T03(2,3);
+
+    //Printing T03
+    ui->matrixTextEdit->appendPlainText("\n T03 : \n");
+    for(int i = 0; i <= 3 ; ++i){
+        QString row_String;
+        for(int j = 0; j <= 3; ++j){
+            value = QString::number(T03(i,j));
+            row_String.append(value);
+            if(j!=3){
+                row_String.append(", ");
+            }
+        }
+        ui->matrixTextEdit->appendPlainText(row_String);
+    }
+
+    Matrix4d T04;
+    T04 = T00 * T01 * T12 * T23 * T34;
+
+    double x04 = T04(0,3);
+    double y04 = T04(1,3);
+    double z04 = T04(2,3);
+
+    //Printing T04
+    ui->matrixTextEdit->appendPlainText("\n T04 : \n");
+    for(int i = 0; i <= 3 ; ++i){
+        QString row_String;
+        for(int j = 0; j <= 3; ++j){
+            value = QString::number(T04(i,j));
+            row_String.append(value);
+            if(j!=3){
+                row_String.append(", ");
+            }
+        }
+        ui->matrixTextEdit->appendPlainText(row_String);
+    }
+
     Matrix4d T05;
-    T05 = T00 * T01 * T12 * T23 * T34 * T45;
+    T05 = T01 * T12 * T23 * T34 * T45;
     std::cout << "Matrix T05:" << std::endl << T05.format(CleanFmt) << std::endl << std::endl;
+
 
     //Printing T05
     ui->matrixTextEdit->appendPlainText("\n T05 : \n");
@@ -479,12 +564,13 @@ void Widget::on_btn_Inverse_Kinematics_clicked()
 //    series->append((int)x14, (int)z14);
 //    series->append((int)x05, (int)z05);
 
-    *series << QPointF(0, 0) <<
-               QPointF((int)x13, (int)y13) <<
-               QPointF((int)tx12, (int)ty12) <<
-               QPointF((int)x13, (int)y13) <<
-               QPointF((int)x14, (int)z14) <<
+    *series << QPointF(0, -(int)l_1_value) <<
+               QPointF(0, 0) <<
+               QPointF((int)x02, (int)z02) <<
+               QPointF((int)x03, (int)z03) <<
+               QPointF((int)x04, (int)z04) <<
                QPointF((int)x05, (int)z05);
+    series->setPointsVisible();
 
     std::cout << "01: x = " << (int)tx01 << std::endl;
     std::cout << "01: y = " << (int)ty01 << std::endl;
@@ -513,9 +599,22 @@ void Widget::on_btn_Inverse_Kinematics_clicked()
     chart->createDefaultAxes();
     chart->setTitle("Simple line chart example");
 
+
     QChartView *chartView = new QChartView(chart);
     chartView->setRenderHint(QPainter::Antialiasing);
     chartView->setParent(ui->chartFrame);
+
+    QValueAxis *axisX = new QValueAxis;
+    axisX->setRange(-350, 350);
+    axisX->setTickCount(10);
+    axisX->setLabelFormat("%.2f");
+    chartView->chart()->setAxisX(axisX, series);
+
+    QValueAxis *axisY = new QValueAxis;
+    axisY->setRange(-350, 350);
+    axisY->setTickCount(10);
+    axisY->setLabelFormat("%.2f");
+    chartView->chart()->setAxisY(axisY, series);
 }
 
 void Widget::on_btn_Forward_Kinematics_clicked()
@@ -601,3 +700,5 @@ void Widget::on_btn_Forward_Kinematics_clicked()
         ui->matrixTextEdit->appendPlainText(row_String);
     }
 }
+
+
