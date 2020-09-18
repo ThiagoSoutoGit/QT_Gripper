@@ -5,6 +5,12 @@
 #include <iostream>
 #include <cmath>
 
+#include <QtCharts>
+#include <QChartView>
+#include <QLineSeries>
+
+QT_CHARTS_USE_NAMESPACE
+
 using namespace Eigen;
 
 #include "C:/eigen/Eigen/Dense"
@@ -15,6 +21,9 @@ Widget::Widget(QWidget *parent)
     , ui(new Ui::Widget)
 {
     ui->setupUi(this);
+
+
+
 
 
     // Defining intial values for the fields
@@ -144,6 +153,15 @@ Matrix4d trans_x(double a){
     return T;
 }
 
+//Matrix4d rot_y(double beta){
+//    Matrix4d T;
+//    T << cos(beta), 0, sin(beta), 0,
+//         0, 1, 0, 0,
+//         -sin(beta), 0, cos(beta), 0,
+//         0, 0, 0, 1;
+//    return T;
+//}
+
 Matrix4d rot_z(double theta){
     Matrix4d T;
     T << cos(theta), -sin(theta), 0, 0,
@@ -173,6 +191,8 @@ Matrix4d h_T(double alpha, double a, double theta, double d){
 
 void Widget::on_btn_Inverse_Kinematics_clicked()
 {
+    ui->matrixTextEdit->clear();
+
     theta_1_value = (ui->Theta_1->text()).toDouble()* M_PI/180;
     theta_2_value = (ui->Theta_2->text()).toDouble()* M_PI/180;
     theta_3_value = (ui->Theta_3->text()).toDouble()* M_PI/180;
@@ -190,22 +210,26 @@ void Widget::on_btn_Inverse_Kinematics_clicked()
 
     std::cout << std::endl <<  "Transform Matrices:" << std::endl << std::endl;;
 
-    double x05 = 100 + 100 * cos(45 * M_PI/180);
-    double y05 = 0;
-    double z05 = 100 + 100 * sin(45 * M_PI/180);
+    double x05test = 100 + 100 * cos(45 * M_PI/180);
+    double y05test = 0;
+    double z05test = 100 + 100 * sin(45 * M_PI/180);
 
-    std::cout << x05 << std::endl <<  y05 << std::endl << z05 << std::endl << std::endl;;
+    std::cout << x05test << std::endl <<  y05test << std::endl << z05test << std::endl << std::endl;;
 
 
     // Create hamogeneous transforms for the forward Kinematics
 
+    Matrix4d T00;
+    T00 = h_T(0, 0, theta_1_value, 0);
+    std::cout << "Matrix T01:" << std::endl << T00.format(CleanFmt) << std::endl << std::endl;
+
     Matrix4d T01;
-    T01 = h_T(0, 0, theta_1_value, l_1_value);
+    double alpha_1 = (90 * M_PI/180);
+    T01 = h_T(alpha_1, 0, 0, l_1_value);
     std::cout << "Matrix T01:" << std::endl << T01.format(CleanFmt) << std::endl << std::endl;
 
     Matrix4d T12;
-    double alpha_1 = (90 * M_PI/180);
-    T12 = h_T(alpha_1, 0, theta_2_value, 0);
+    T12 = h_T(0, 0, theta_2_value, 0);
     std::cout << "Matrix T12:" << std::endl << T12.format(CleanFmt) << std::endl << std::endl;
 
     Matrix4d T23;
@@ -221,9 +245,31 @@ void Widget::on_btn_Inverse_Kinematics_clicked()
     std::cout << "Matrix T45:" << std::endl << T45.format(CleanFmt) << std::endl << std::endl;
 
     Matrix4d T05;
-    T05 = T01 * T12 * T23 * T34 * T45;
+    T05 = T00 * T01 * T12 * T23 * T34 * T45;
     std::cout << "Matrix T05:" << std::endl << T05.format(CleanFmt) << std::endl << std::endl;
 
+    //Printing T05
+    ui->matrixTextEdit->appendPlainText("\n T05 : \n");
+    for(int i = 0; i <= 3 ; ++i){
+        QString row_String;
+        for(int j = 0; j <= 3; ++j){
+            value = QString::number(T05(i,j));
+            row_String.append(value);
+            if(j!=3){
+                row_String.append(", ");
+            }
+        }
+        ui->matrixTextEdit->appendPlainText(row_String);
+    }
+
+    double x05 = T05(0,3);
+    double y05 = T05(1,3);
+    double z05 = T05(2,3);
+
+
+
+//    Matrix4d T05_no_base_rotation;
+//    T05_no_base_rotation = T01 * T12 * T23 * T34 * T45;
 
     // Inverse Kinematics
 
@@ -231,9 +277,42 @@ void Widget::on_btn_Inverse_Kinematics_clicked()
     T15 = T05 * T01.inverse();
     std::cout << "Matrix T15:" << std::endl << T15.format(CleanFmt) << std::endl << std::endl;
 
+    //Printing T15
+    ui->matrixTextEdit->appendPlainText("\n T15 : \n");
+    for(int i = 0; i <= 3 ; ++i){
+        QString row_String;
+        for(int j = 0; j <= 3; ++j){
+            value = QString::number(T15(i,j));
+            row_String.append(value);
+            if(j!=3){
+                row_String.append(", ");
+            }
+        }
+        ui->matrixTextEdit->appendPlainText(row_String);
+    }
+
+    double x15 = T15(0,3);
+    double y15 = T15(1,3);
+    double z15 = T15(2,3);
+
+
     Matrix4d T14;
     T14 = T15 * T45.inverse();
     std::cout << "Matrix T14:" << std::endl << T14.format(CleanFmt) << std::endl << std::endl;
+
+    //Printing T14
+    ui->matrixTextEdit->appendPlainText("\n T14 : \n");
+    for(int i = 0; i <= 3 ; ++i){
+        QString row_String;
+        for(int j = 0; j <= 3; ++j){
+            value = QString::number(T14(i,j));
+            row_String.append(value);
+            if(j!=3){
+                row_String.append(", ");
+            }
+        }
+        ui->matrixTextEdit->appendPlainText(row_String);
+    }
 
     double x14 = T14(0,3);
     double y14 = T14(1,3);
@@ -282,6 +361,32 @@ void Widget::on_btn_Inverse_Kinematics_clicked()
     theta_4_angle = atan2(s4, c4) * 180/M_PI;
     ui->Theta_44->setText(QString::number(theta_4_angle));
 
+    // Aditional transform
+
+    // Base transform
+
+    //Theta 1
+
+//    Matrix4d Trot;
+//    Trot = T15 * h_T(-alpha_1, 0, 0, 0);
+
+//    double xTrot = Trot(0,3);
+//    double yTrot = Trot(1,3);
+//    double zTrot = Trot(2,3);
+
+
+//    double theta_1_angle;
+//    theta_1_angle = atan2(zTrot, xTrot) * 180/M_PI;
+//    ui->Theta_11->setText(QString::number(theta_1_angle));
+
+
+    double theta_1_angle;
+    theta_1_angle = atan2(y05, x05) * 180/M_PI;
+    ui->Theta_11->setText(QString::number(theta_1_angle));
+
+
+
+
 
 
 
@@ -307,6 +412,110 @@ void Widget::on_btn_Inverse_Kinematics_clicked()
 
 
 
+
+
+    //Graphic
+
+
+//    series->append(0, 0);
+//    series->append(T01(0, 3), T01(2, 3));
+//    series->append(T12(0, 3), T12(2, 3));
+//    series->append(T23(0, 3), T23(2, 3));
+//    series->append(T34(0, 3), T34(2, 3));
+//    series->append(T45(0, 3), T45(2, 3));
+
+//    *series << QPointF(0, 0) << QPointF(T01(0, 3), T01(2, 3)) << QPointF(T12(0, 3), T12(2, 3)) << QPointF(T23(0, 3), T23(2, 3)) <<
+//               QPointF(T34(0, 3), T34(2, 3)) << QPointF(T45(0, 3), T45(2, 3));
+
+
+
+
+    QLineSeries *series = new QLineSeries();
+
+//    series->append(0, 6);
+//    series->append(2, 4);
+//    series->append(3, 8);
+//    series->append(7, 4);
+//    series->append(10, 5);
+
+//    series->append(0, 0);
+    int tx01 = T01(0, 3);
+    int tx12 = T12(0, 3);
+    int tx23 = T23(0, 3);
+    int tx34 = T34(0, 3);
+    int tx45 = T45(0, 3);
+
+    int ty01 = T01(2, 3);
+    int ty12 = T12(2, 3);
+    int ty23 = T23(2, 3);
+    int ty34 = T34(2, 3);
+    int ty45 = T45(2, 3);
+
+    std::cout << tx01 << tx12 << tx23 << tx34 << tx45 << ty01 << ty12 << ty23 << ty34 << ty45 << std::endl;
+    std::cout << std::endl;
+
+    std::cout << T01(0, 3) << std::endl;
+    std::cout << T12(0, 3) << std::endl;
+    std::cout << T23(0, 3) << std::endl;
+    std::cout << T34(0, 3) << std::endl;
+    std::cout << T45(0, 3) << std::endl;
+
+    std::cout << T01(2, 3) << std::endl;
+    std::cout << T12(2, 3) << std::endl;
+    std::cout << T23(2, 3) << std::endl;
+    std::cout << T34(2, 3) << std::endl;
+    std::cout << T45(2, 3) << std::endl;
+
+
+    Matrix4d T13 = T14 * T34.inverse();
+
+    double x13 = T13(0,3);
+    double y13 = T13(2,3);
+
+
+//    series->append((int)tx01, (int)ty01);
+//    series->append((int)tx12, (int)ty12);
+//    series->append((int)x13, (int)y13);
+//    series->append((int)x14, (int)z14);
+//    series->append((int)x05, (int)z05);
+
+    *series << QPointF(0, 0) <<
+               QPointF((int)x13, (int)y13) <<
+               QPointF((int)tx12, (int)ty12) <<
+               QPointF((int)x13, (int)y13) <<
+               QPointF((int)x14, (int)z14) <<
+               QPointF((int)x05, (int)z05);
+
+    std::cout << "01: x = " << (int)tx01 << std::endl;
+    std::cout << "01: y = " << (int)ty01 << std::endl;
+
+    std::cout << "12: x = " << (int)tx12 << std::endl;
+    std::cout << "12: y = " << (int)ty12 << std::endl;
+
+    std::cout << "13: x = " << (int)x13 << std::endl;
+    std::cout << "13: y = " << (int)y13 << std::endl;
+
+    std::cout << "14: x = " << (int)x14 << std::endl;
+    std::cout << "14: y = " << (int)y14 << std::endl;
+
+    std::cout << "05: x = " << (int)x05 << std::endl;
+    std::cout << "05: y = " << (int)y05 << std::endl;
+
+
+
+//    *series << QPointF(0, 0) << QPointF(T01(0, 3), T01(2, 3)) << QPointF(T12(0, 3), T12(2, 3)) << QPointF(T23(0, 3), T23(2, 3)) <<
+//               QPointF(T34(0, 3), T34(2, 3)) << QPointF(T45(0, 3), T45(2, 3));
+
+
+    QChart *chart = new QChart();
+    chart->legend()->hide();
+    chart->addSeries(series);
+    chart->createDefaultAxes();
+    chart->setTitle("Simple line chart example");
+
+    QChartView *chartView = new QChartView(chart);
+    chartView->setRenderHint(QPainter::Antialiasing);
+    chartView->setParent(ui->chartFrame);
 }
 
 void Widget::on_btn_Forward_Kinematics_clicked()

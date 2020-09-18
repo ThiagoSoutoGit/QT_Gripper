@@ -5,6 +5,12 @@
 #include "C:/eigen/Eigen/Dense"
 using namespace Eigen;
 
+#include <QtCharts>
+#include <QChartView>
+#include <QLineSeries>
+
+
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
 QT_END_NAMESPACE
@@ -44,6 +50,7 @@ public:
     QString Pos_y;
     QString Pos_z;
     QString value;
+
 
 
 //    IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
