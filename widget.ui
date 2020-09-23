@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="btn_Forward">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <property name="documentMode">
       <bool>false</bool>
@@ -527,7 +527,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QTextEdit" name="textEdit"/>
+          <widget class="QTextEdit" name="communication_textEdit"/>
          </item>
         </layout>
        </item>
@@ -543,10 +543,10 @@
             </widget>
            </item>
            <item>
-            <widget class="QTextEdit" name="textEdit_2"/>
+            <widget class="QTextEdit" name="data_to_be_sent_textEdit"/>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton">
+            <widget class="QPushButton" name="send_instructions_pushButton">
              <property name="text">
               <string>send Instructions</string>
              </property>

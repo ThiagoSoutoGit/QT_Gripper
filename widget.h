@@ -8,6 +8,7 @@ using namespace Eigen;
 #include <QtCharts>
 #include <QChartView>
 #include <QLineSeries>
+#include "serial.h"
 
 
 
@@ -19,9 +20,13 @@ class Widget : public QWidget
 {
     Q_OBJECT
 
+    friend class serial;
+
 public:
     Widget(QWidget *parent = nullptr);
     ~Widget();
+
+    Ui::Widget *ui;
 
     double theta_1_value;
     double theta_2_value;
@@ -63,7 +68,6 @@ public slots:
 
     void on_btn_Forward_Kinematics_clicked();
 
-private:
-    Ui::Widget *ui;
+    void on_send_instructions_pushButton_clicked();
 };
 #endif // WIDGET_H

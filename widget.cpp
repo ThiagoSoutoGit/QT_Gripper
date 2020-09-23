@@ -33,7 +33,7 @@ Widget::Widget(QWidget *parent)
 //    ui->L_3->setText("500");
 //    ui->L_4->setText("180");
 
-    ui->L_1->setText("0");
+    ui->L_1->setText("100");
     ui->L_2->setText("100");
     ui->L_3->setText("100");
     ui->L_4->setText("100");
@@ -219,9 +219,9 @@ void Widget::on_btn_Inverse_Kinematics_clicked()
 
     // Create hamogeneous transforms for the forward Kinematics
 
-    Matrix4d T00;
-    T00 = h_T(0, 0, theta_1_value, 0);
-    std::cout << "Matrix T01:" << std::endl << T00.format(CleanFmt) << std::endl << std::endl;
+//    Matrix4d T00;
+//    T00 = h_T(0, 0, 0, 0);
+//    std::cout << "Matrix T01:" << std::endl << T00.format(CleanFmt) << std::endl << std::endl;
 
     Matrix4d T01;
     double alpha_1 = (90 * M_PI/180);
@@ -245,7 +245,7 @@ void Widget::on_btn_Inverse_Kinematics_clicked()
     std::cout << "Matrix T45:" << std::endl << T45.format(CleanFmt) << std::endl << std::endl;
 
 
-    T01 = T00 * T01;
+//    T01 = T00 * T01;
 
     double x01 = T01(0,3);
     double y01 = T01(1,3);
@@ -266,7 +266,8 @@ void Widget::on_btn_Inverse_Kinematics_clicked()
     }
 
     Matrix4d T02;
-    T02 = T00 * T01 * T12;
+//    T02 = T00 * T01 * T12;
+    T02 = T01 * T12;
 
     double x02 = T02(0,3);
     double y02 = T02(1,3);
@@ -287,7 +288,8 @@ void Widget::on_btn_Inverse_Kinematics_clicked()
     }
 
     Matrix4d T03;
-    T03 = T00 * T01 * T12 * T23;
+//    T03 = T00 * T01 * T12 * T23;
+    T03 = T01 * T12 * T23;
 
     double x03 = T03(0,3);
     double y03 = T03(1,3);
@@ -308,7 +310,9 @@ void Widget::on_btn_Inverse_Kinematics_clicked()
     }
 
     Matrix4d T04;
-    T04 = T00 * T01 * T12 * T23 * T34;
+//    T04 = T00 * T01 * T12 * T23 * T34;
+    T04 = T01 * T12 * T23 * T34;
+
 
     double x04 = T04(0,3);
     double y04 = T04(1,3);
@@ -329,6 +333,7 @@ void Widget::on_btn_Inverse_Kinematics_clicked()
     }
 
     Matrix4d T05;
+//    T05 = T00 * T01 * T12 * T23 * T34 * T45;
     T05 = T01 * T12 * T23 * T34 * T45;
     std::cout << "Matrix T05:" << std::endl << T05.format(CleanFmt) << std::endl << std::endl;
 
@@ -418,6 +423,12 @@ void Widget::on_btn_Inverse_Kinematics_clicked()
     theta_2_angle = (B - W) * 180/M_PI;
     ui->Theta_22->setText(QString::number(theta_2_angle));
 
+    QString Theta2_data;
+    Theta2_data.append("Theta 2 :");
+    Theta2_data.append(QString::number(theta_2_angle));
+    ui->data_to_be_sent_textEdit->append(Theta2_data);
+
+
 
     double c3;
     c3 = (pow(x14, 2) + pow(z14, 2) - pow(l_2_value, 2) - pow(l_3_value, 2))/(2*l_2_value*l_3_value);
@@ -426,6 +437,11 @@ void Widget::on_btn_Inverse_Kinematics_clicked()
     double theta_3_angle;
     theta_3_angle = atan2(s3, c3) * 180/M_PI;
     ui->Theta_33->setText(QString::number(theta_3_angle));
+
+    QString Theta3_data;
+    Theta3_data.append("Theta 3 :");
+    Theta3_data.append(QString::number(theta_3_angle));
+    ui->data_to_be_sent_textEdit->append(Theta3_data);
 
     Matrix4d T35;
 
@@ -446,6 +462,11 @@ void Widget::on_btn_Inverse_Kinematics_clicked()
     theta_4_angle = atan2(s4, c4) * 180/M_PI;
     ui->Theta_44->setText(QString::number(theta_4_angle));
 
+    QString Theta4_data;
+    Theta4_data.append("Theta 4 :");
+    Theta4_data.append(QString::number(theta_4_angle));
+    ui->data_to_be_sent_textEdit->append(Theta4_data);
+
     // Aditional transform
 
     // Base transform
@@ -465,8 +486,16 @@ void Widget::on_btn_Inverse_Kinematics_clicked()
 //    ui->Theta_11->setText(QString::number(theta_1_angle));
 
 
+//    Matrix4d T_Theta1;
+//    alpha_1 = (90 * M_PI/180);
+//    T_Theta1 = T05 * h_T(-alpha_1, 0, 0, 0);
     double theta_1_angle;
-    theta_1_angle = atan2(y05, x05) * 180/M_PI;
+
+//    double t1x35 = T_Theta1(0,3);
+//    double t1y35 = T_Theta1(1,3);
+//    double t1z35 = T_Theta1(2,3);
+
+    theta_1_angle = atan2(y15, z15) * 180/M_PI;
     ui->Theta_11->setText(QString::number(theta_1_angle));
 
 
@@ -605,13 +634,13 @@ void Widget::on_btn_Inverse_Kinematics_clicked()
     chartView->setParent(ui->chartFrame);
 
     QValueAxis *axisX = new QValueAxis;
-    axisX->setRange(-350, 350);
+    axisX->setRange(-1200, 1200);
     axisX->setTickCount(10);
     axisX->setLabelFormat("%.2f");
     chartView->chart()->setAxisX(axisX, series);
 
     QValueAxis *axisY = new QValueAxis;
-    axisY->setRange(-350, 350);
+    axisY->setRange(-1200, 1200);
     axisY->setTickCount(10);
     axisY->setLabelFormat("%.2f");
     chartView->chart()->setAxisY(axisY, series);
@@ -677,11 +706,27 @@ void Widget::on_btn_Forward_Kinematics_clicked()
     Pos_x = QString::number(T(0,3));
     ui->X_Pos->setText(Pos_x);
 
+
     Pos_y = QString::number(T(1,3));
     ui->Y_Pos->setText(Pos_y);
 
+
     Pos_z = QString::number(T(2,3));
     ui->Z_Pos->setText(Pos_z);
+
+    ui->data_to_be_sent_textEdit->clear();
+
+    QString data_to_be_sent;
+    data_to_be_sent.append("Position (x,y,z): (");
+    data_to_be_sent.append(Pos_x);
+    data_to_be_sent.append(" ,");
+    data_to_be_sent.append(Pos_y);
+    data_to_be_sent.append(" ,");
+    data_to_be_sent.append(Pos_z);
+    data_to_be_sent.append(")");
+
+
+    ui->data_to_be_sent_textEdit->append(data_to_be_sent);
 
 //    std::cout << "Row size is: " << T.rows();
 
@@ -702,3 +747,18 @@ void Widget::on_btn_Forward_Kinematics_clicked()
 }
 
 
+void Widget::on_send_instructions_pushButton_clicked()
+{
+
+    Serial *s = new Serial();
+
+    s->open("COM7");
+
+    s->write("Hello world!");
+
+
+    ui->communication_textEdit->append("Data Successfully sent");
+
+////    s->sayhello("hello");
+
+}

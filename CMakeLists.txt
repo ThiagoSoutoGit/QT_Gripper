@@ -29,6 +29,7 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 find_package(Qt5Charts)
 find_package(Qt5OpenGL)
 find_package(OpenGL)
+find_package(Qt5SerialPort)
 
 
 
@@ -43,6 +44,8 @@ if(ANDROID)
     widget.ui
     myglwidget.cpp
     myglwidget.h
+    Serial.cpp
+    Serial.h
 
   )
 else()
@@ -53,9 +56,12 @@ else()
     widget.ui
     myglwidget.cpp
     myglwidget.h
+    Serial.cpp
+    Serial.h
+
 
   )
 endif()
 
-target_link_libraries(Gripper PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt5::Charts ${OPENGL_LIBRARIES})
+target_link_libraries(Gripper PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt5::Charts ${OPENGL_LIBRARIES} Qt5::SerialPort)
 
