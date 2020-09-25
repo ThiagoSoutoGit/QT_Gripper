@@ -46,10 +46,10 @@ void MyGLWidget::paintGL()
         glVertex3f(2.0f, 0.0f, 0.0f);
 
         glVertex3f(0.0f, 0.0f, 0.0f);
-        glVertex3f(0.0f, 1.0f, 0.0f);
+        glVertex3f(0.0f, 2.0f, 0.0f);
 
         glVertex3f(0.0f, 0.0f, 0.0f);
-        glVertex3f(0.0f, 0.0f, 1.0f);
+        glVertex3f(0.0f, 0.0f, 2.0f);
 
     glEnd();
 

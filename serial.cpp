@@ -28,8 +28,8 @@ void Serial::open(const QString &name)
     std::cout << "Serial Port " << name.toStdString() << " opened!" << std::endl;
 
 
-//    ui->communication_textEdit->append("Hello World");
-//    ui->data_to_be_sent_textEdit->append("Hello World");
+    ui->communication_textEdit->append("Hello World");
+    ui->data_to_be_sent_textEdit->append("Hello World");
 
 //    QWidget *obj = new Widget();
 
