@@ -16,17 +16,10 @@ class Serial : public QWidget
 public:
     explicit Serial(QWidget *parent = nullptr);
 
-    void open(const QString &name);
-    void write(const QString &message);
+    void open(Ui::Widget *ui, const QString &name);
+    void write(Ui::Widget *ui, const QString &message);
 
     QSerialPort *serialPort;
-
-
-
-//    QWidget *obj = new Widget();
-    Ui::Widget *ui;
-
-
 
 signals:
 
@@ -34,6 +27,7 @@ signals:
 
 public slots:
 
+//    void slot_messageWritten(Ui::Widget *ui);
     void slot_messageWritten();
 
 };

@@ -1,11 +1,5 @@
 #include "myglwidget.h"
-#include <QSurfaceFormat>
-//#include "widget.h"
-//#include "ui_widget.h"
 
-
-
-//#include <glm/mat4x4.hpp>
 
 MyGLWidget::MyGLWidget(QWidget* parent):
     QOpenGLWidget(parent)
@@ -19,11 +13,13 @@ MyGLWidget::MyGLWidget(QWidget* parent):
 
 }
 
+
 void MyGLWidget::initializeGL()
 {
     //This is compulsory
     this->initializeOpenGLFunctions();
 }
+
 
 void MyGLWidget::paintGL()
 {
@@ -38,45 +34,128 @@ void MyGLWidget::paintGL()
     glLineWidth(3);
     glMatrixMode(GL_PROJECTION);
 
-    glBegin(GL_LINES);
+    glLoadIdentity();
+    glTranslatef(0.0, 0.0, 0.0);
+    glRotatef(xRot / 16.0, 1.0, 0.0, 0.0);
+    glRotatef(yRot / 16.0, 0.0, 1.0, 0.0);
+    glRotatef(zRot / 16.0, 0.0, 0.0, 1.0);
 
-        glColor3f(0,0,0);
-
-        glVertex3f(0.0f, 0.0f, 0.0f);
-        glVertex3f(2.0f, 0.0f, 0.0f);
-
-        glVertex3f(0.0f, 0.0f, 0.0f);
-        glVertex3f(0.0f, 2.0f, 0.0f);
-
-        glVertex3f(0.0f, 0.0f, 0.0f);
-        glVertex3f(0.0f, 0.0f, 2.0f);
-
-    glEnd();
-
-    double w = 490;
-    double h = 600;
-    double c = 320;
-
-
-//    glLoadIdentity();
-
-//    glViewport(0, 0, w, h);
-//    gluOrtho2D(0, w, h, 0);
-//    glMatrixMode(GL_MODELVIEW);
-//    update();
+    draw();
 
     glFlush();
 
 }
 
-void MyGLWidget::resizeGL(int w, int h)
-{
-    glViewport(0, 0, w, h);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(45, (float)w/h, 0.01, 100.0);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    gluLookAt(0,0,5, 0,0,0, 0,1,0);
 
+QSize MyGLWidget::minimumSizeHint() const
+{
+    return QSize(50, 50);
+}
+
+
+QSize MyGLWidget::sizeHint() const
+{
+    return QSize(400, 400);
+}
+
+
+void MyGLWidget::mousePressEvent(QMouseEvent *event)
+{
+    lastPos = event->pos();
+}
+
+
+void MyGLWidget::mouseMoveEvent(QMouseEvent *event)
+{
+    int dx = event->x() - lastPos.x();
+    int dy = event->y() - lastPos.y();
+
+    if (event->buttons() & Qt::LeftButton) {
+        setXRotation(xRot + 8 * dy);
+        setYRotation(yRot + 8 * dx);
+    } else if (event->buttons() & Qt::RightButton) {
+        setXRotation(xRot + 8 * dy);
+        setZRotation(zRot + 8 * dx);
+    }
+
+    lastPos = event->pos();
+}
+
+
+
+static void qNormalizeAngle(int &angle)
+{
+    while (angle < 0)
+        angle += 360 * 16;
+    while (angle > 360)
+        angle -= 360 * 16;
+}
+
+
+void MyGLWidget::setXRotation(int angle)
+{
+    qNormalizeAngle(angle);
+        if (angle != xRot) {
+            xRot = angle;
+            emit xRotationChanged(angle);
+            MyGLWidget::update();
+        }
+}
+
+
+void MyGLWidget::setYRotation(int angle)
+{
+    qNormalizeAngle(angle);
+        if (angle != yRot) {
+            yRot = angle;
+            emit yRotationChanged(angle);
+            MyGLWidget::update();
+        }
+}
+
+
+void MyGLWidget::setZRotation(int angle)
+{
+    qNormalizeAngle(angle);
+        if (angle != zRot) {
+            zRot = angle;
+            emit zRotationChanged(angle);
+            MyGLWidget::update();
+        }
+}
+
+
+void MyGLWidget::resizeGL(int width, int height)
+{
+    int side = qMin(width, height);
+        glViewport((width - side) / 2, (height - side) / 2, side, side);
+
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+    #ifdef QT_OPENGL_ES_1
+        glOrthof(-2, +2, -2, +2, 1.0, 15.0);
+    #else
+        glOrtho(-2, +2, -2, +2, 1.0, 15.0);
+    #endif
+        glMatrixMode(GL_MODELVIEW);
+
+}
+
+
+void MyGLWidget::draw()
+{
+    glBegin(GL_LINES);
+
+        glColor3f(0,0,0);
+
+        glVertex3f(0.0f, 0.0f, 0.0f);
+        glVertex3f(0.5f, 0.0f, 0.0f);
+
+        glVertex3f(0.0f, 0.0f, 0.0f);
+        glVertex3f(0.0f, 0.5f, 0.0f);
+
+        glVertex3f(0.0f, 0.0f, 0.0f);
+        glVertex3f(0.0f, 0.0f, 0.5f);
+
+    glEnd();
 }

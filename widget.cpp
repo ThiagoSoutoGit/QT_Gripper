@@ -22,21 +22,27 @@ Widget::Widget(QWidget *parent)
 {
     ui->setupUi(this);
 
+    connect(ui->openGLWidget, SIGNAL(xRotationChanged(int)), ui->rotXSlider, SLOT(setValue(int)));
+    connect(ui->openGLWidget, SIGNAL(yRotationChanged(int)), ui->rotYSlider, SLOT(setValue(int)));
+    connect(ui->openGLWidget, SIGNAL(zRotationChanged(int)), ui->rotZSlider, SLOT(setValue(int)));
+
 
 
 
 
     // Defining intial values for the fields
 
-//    ui->L_1->setText("230");
-//    ui->L_2->setText("500");
-//    ui->L_3->setText("500");
-//    ui->L_4->setText("180");
+    //Project robot arm
+    ui->L_1->setText("230");
+    ui->L_2->setText("500");
+    ui->L_3->setText("500");
+    ui->L_4->setText("180");
 
-    ui->L_1->setText("100");
-    ui->L_2->setText("100");
-    ui->L_3->setText("100");
-    ui->L_4->setText("100");
+    //Easy to calculate arms
+//    ui->L_1->setText("100");
+//    ui->L_2->setText("100");
+//    ui->L_3->setText("100");
+//    ui->L_4->setText("100");
 
     ui->Theta_1->setText("0");
     ui->Theta_2->setText("0");
@@ -626,7 +632,7 @@ void Widget::on_btn_Inverse_Kinematics_clicked()
     chart->legend()->hide();
     chart->addSeries(series);
     chart->createDefaultAxes();
-    chart->setTitle("Simple line chart example");
+    chart->setTitle("Robot Manipulator");
 
 
     QChartView *chartView = new QChartView(chart);
@@ -634,17 +640,23 @@ void Widget::on_btn_Inverse_Kinematics_clicked()
     chartView->setParent(ui->chartFrame);
 
     QValueAxis *axisX = new QValueAxis;
-    axisX->setRange(-1200, 1200);
+    float range;
+    range = (ui->L_2->text().toFloat())+
+            (ui->L_3->text().toFloat())+
+            (ui->L_4->text().toFloat());
+    axisX->setRange(-range, range);
     axisX->setTickCount(10);
     axisX->setLabelFormat("%.2f");
     chartView->chart()->setAxisX(axisX, series);
 
     QValueAxis *axisY = new QValueAxis;
-    axisY->setRange(-1200, 1200);
+    axisY->setRange(-range, range);
     axisY->setTickCount(10);
     axisY->setLabelFormat("%.2f");
     chartView->chart()->setAxisY(axisY, series);
 }
+
+
 
 void Widget::on_btn_Forward_Kinematics_clicked()
 {
@@ -752,13 +764,8 @@ void Widget::on_send_instructions_pushButton_clicked()
 
     Serial *s = new Serial();
 
-    s->open("COM7");
+    s->open(ui, "COM7");
 
-    s->write("Hello world!");
-
-
-    ui->communication_textEdit->append("Data Successfully sent");
-
-////    s->sayhello("hello");
+    s->write(ui, "Hello world!");
 
 }

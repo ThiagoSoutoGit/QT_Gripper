@@ -5,10 +5,14 @@
 #include "C:/eigen/Eigen/Dense"
 using namespace Eigen;
 
+#include <QOpenGLWidget>
+
+
 #include <QtCharts>
 #include <QChartView>
 #include <QLineSeries>
 #include "serial.h"
+#include "myglwidget.h"
 
 
 
@@ -57,11 +61,6 @@ public:
     QString value;
 
 
-
-//    IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
-
-
-
 public slots:
 
     void on_btn_Inverse_Kinematics_clicked();
@@ -69,5 +68,6 @@ public slots:
     void on_btn_Forward_Kinematics_clicked();
 
     void on_send_instructions_pushButton_clicked();
+
 };
 #endif // WIDGET_H
